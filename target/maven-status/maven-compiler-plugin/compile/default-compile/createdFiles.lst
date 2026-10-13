@@ -1,0 +1,5 @@
+com\nexuscode\registro\security\JwtService.class
+com\nexuscode\registro\security\SecurityConfig.class
+com\nexuscode\registro\DataInitializer.class
+com\nexuscode\registro\RegistroIncidenciasApplication.class
+com\nexuscode\registro\security\JwtAuthenticationFilter.class

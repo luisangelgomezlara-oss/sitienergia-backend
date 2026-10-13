@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  sitienergia-db:
+    image: postgres:15
+    container_name: sitienergia-postgres-local
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sitienergia
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - sitienergia_data:/var/lib/postgresql/data
+
+volumes:
+  sitienergia_data:
