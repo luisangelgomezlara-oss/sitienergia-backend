@@ -1,6 +1,7 @@
 package com.nexuscode.registro.entities;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "usuarios")
@@ -9,6 +10,7 @@ public class User {
     private Long id;
     @Column(nullable = false) private String nombre;
     @Column(nullable = false, unique = true) private String email;
+    @JsonIgnore // 👈 2. Pon esto justo aquí
     @Column(nullable = false) private String passwordHash;
     @Enumerated(EnumType.STRING) @Column(nullable = false) private Role rol;
     private String telefono;
