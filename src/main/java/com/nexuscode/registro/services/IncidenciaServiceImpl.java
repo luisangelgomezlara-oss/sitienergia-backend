@@ -21,8 +21,8 @@ public class IncidenciaServiceImpl implements IncidenciaService {
     private final IncidentCategoryRepository categoryRepository;
 
     // Inyección de dependencias (SRP: El servicio une los repositorios)
-    public IncidenciaServiceImpl(IncidenciaRepository incidenciaRepository, 
-                                 UserRepository userRepository, 
+    public IncidenciaServiceImpl(IncidenciaRepository incidenciaRepository,
+                                 UserRepository userRepository,
                                  IncidentCategoryRepository categoryRepository) {
         this.incidenciaRepository = incidenciaRepository;
         this.userRepository = userRepository;
@@ -33,17 +33,22 @@ public class IncidenciaServiceImpl implements IncidenciaService {
     public Incidencia registrarIncidencia(Long usuarioId, IncidenciaRequest request) {
         User cliente = userRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
-        
+
         IncidentCategory categoria = categoryRepository.findById(request.categoriaId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada"));
 
-        Incidencia nuevaIncidencia = new Incidencia();
-        nuevaIncidencia.setUsuario(cliente);
-        nuevaIncidencia.setCategoria(categoria);
-        nuevaIncidencia.setDescripcion(request.descripcion());
-        nuevaIncidencia.setUbicacion(request.ubicacion());
-        
-        return incidenciaRepository.save(nuevaIncidencia);
+        Incidencia nueva = new Incidencia();
+        nueva.setUsuario(cliente);
+        nueva.setCategoria(categoria);
+
+        // Asignamos los nuevos campos que vienen de Flutter
+        nueva.setNic(request.nic());
+        nueva.setDescripcion(request.descripcion());
+        nueva.setUbicacion(request.ubicacion());
+        nueva.setLatitud(request.latitud());
+        nueva.setLongitud(request.longitud());
+
+        return incidenciaRepository.save(nueva);
     }
 
     @Override
@@ -60,7 +65,7 @@ public class IncidenciaServiceImpl implements IncidenciaService {
     public Incidencia asignarTecnico(Long incidenciaId, Long tecnicoId) {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incidencia no encontrada"));
-        
+
         User tecnico = userRepository.findById(tecnicoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Técnico no encontrado"));
 
@@ -78,7 +83,7 @@ public class IncidenciaServiceImpl implements IncidenciaService {
     public Incidencia actualizarEstado(Long incidenciaId, String nuevoEstado) {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incidencia no encontrada"));
-        
+
         incidencia.setEstado(nuevoEstado);
         return incidenciaRepository.save(incidencia);
     }

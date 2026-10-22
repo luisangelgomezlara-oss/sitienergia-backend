@@ -34,24 +34,35 @@ public class UserServiceImpl implements UserService {
         if (users.existsByEmail(request.email())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya esta registrado");
         }
-        User nuevoUsuario = new User(request.nombre(), request.email(), encoder.encode(request.password()), request.rol(), request.telefono());
+
+        // CORREGIDO: Le agregamos .name() al rol para pasarlo a String
+        User nuevoUsuario = new User(
+                request.nombre(),
+                request.email(),
+                encoder.encode(request.password()),
+                request.rol().name(),
+                request.telefono()
+        );
         return UserResponse.from(users.save(nuevoUsuario));
     }
 
     @Override
     public UserResponse actualizarUsuario(Long id, UpdateUserRequest request) {
         User user = users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
-        user.setNombre(request.nombre()); 
-        user.setRol(request.rol()); 
-        user.setTelefono(request.telefono()); 
+
+        user.setNombre(request.nombre());
+        // CORREGIDO: Le agregamos .name() al rol para pasarlo a String
+        user.setRol(request.rol().name());
+        user.setTelefono(request.telefono());
         user.setActivo(request.activo());
+
         return UserResponse.from(users.save(user));
     }
 
     @Override
     public void desactivarUsuario(Long id) {
-        User user = users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)); 
-        user.setActivo(false); 
+        User user = users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        user.setActivo(false);
         users.save(user);
     }
 }
