@@ -46,6 +46,23 @@ public class Incidencia {
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
+    @Column(name = "direccion")
+    private String direccion;
+
+    @Column(columnDefinition = "TEXT")
+    private String imagen;
+
+    public String getImagen() { return imagen; }
+    public void setImagen(String imagen) { this.imagen = imagen; }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.fechaCreacion = LocalDateTime.now();

@@ -37,6 +37,11 @@ public class IncidenciaController {
         dto.put("descripcion", inc.getDescripcion());
         dto.put("estado", inc.getEstado());
         dto.put("fechaCreacion", inc.getFechaCreacion().toString());
+
+        // Corrección de la ubicación y adición de la imagen en Base64
+        dto.put("direccion", inc.getUbicacion());
+        dto.put("imagen", inc.getImagen());
+
         // Se extrae la categoría de forma segura
         dto.put("categoria", inc.getCategoria() != null ? inc.getCategoria().getNombre() : "Sin categoría");
         return dto;

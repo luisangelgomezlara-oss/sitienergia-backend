@@ -20,7 +20,6 @@ public class IncidenciaServiceImpl implements IncidenciaService {
     private final UserRepository userRepository;
     private final IncidentCategoryRepository categoryRepository;
 
-    // Inyección de dependencias (SRP: El servicio une los repositorios)
     public IncidenciaServiceImpl(IncidenciaRepository incidenciaRepository,
                                  UserRepository userRepository,
                                  IncidentCategoryRepository categoryRepository) {
@@ -31,24 +30,29 @@ public class IncidenciaServiceImpl implements IncidenciaService {
 
     @Override
     public Incidencia registrarIncidencia(Long usuarioId, IncidenciaRequest request) {
-        User cliente = userRepository.findById(usuarioId)
+
+        // 1. Buscamos al usuario que está haciendo el reporte
+        User usuario = userRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
+        // 2. Buscamos la categoría seleccionada en la app
         IncidentCategory categoria = categoryRepository.findById(request.categoriaId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoría no encontrada"));
 
-        Incidencia nueva = new Incidencia();
-        nueva.setUsuario(cliente);
-        nueva.setCategoria(categoria);
+        // 3. Armamos la incidencia con todos los datos
+        Incidencia incidencia = new Incidencia();
+        incidencia.setUsuario(usuario);
+        incidencia.setCategoria(categoria);
+        incidencia.setNic(request.nic());
+        incidencia.setDescripcion(request.descripcion());
+        incidencia.setUbicacion(request.ubicacion());
+        incidencia.setLatitud(request.latitud());
+        incidencia.setLongitud(request.longitud());
+        incidencia.setImagen(request.imagen());
+        incidencia.setEstado("PENDIENTE"); // Estado por defecto al crear
 
-        // Asignamos los nuevos campos que vienen de Flutter
-        nueva.setNic(request.nic());
-        nueva.setDescripcion(request.descripcion());
-        nueva.setUbicacion(request.ubicacion());
-        nueva.setLatitud(request.latitud());
-        nueva.setLongitud(request.longitud());
-
-        return incidenciaRepository.save(nueva);
+        // 4. Guardamos en PostgreSQL
+        return incidenciaRepository.save(incidencia);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class IncidenciaServiceImpl implements IncidenciaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Técnico no encontrado"));
 
         incidencia.setTecnicoAsignado(tecnico);
-        incidencia.setEstado("ASIGNADA"); // Cambia el estado automáticamente
+        incidencia.setEstado("ASIGNADA");
         return incidenciaRepository.save(incidencia);
     }
 

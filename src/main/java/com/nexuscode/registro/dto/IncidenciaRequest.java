@@ -8,7 +8,7 @@ public record IncidenciaRequest(
         Long categoriaId,
 
         @NotBlank(message = "El NIC es obligatorio")
-        String nic, // ¡Aquí está el nuevo campo!
+        String nic,
 
         @NotBlank(message = "La descripción es obligatoria")
         String descripcion,
@@ -16,7 +16,9 @@ public record IncidenciaRequest(
         @NotBlank(message = "La ubicación es obligatoria")
         String ubicacion,
 
-        // Coordenadas opcionales para cuando implementemos Maps
         Double latitud,
-        Double longitud
+
+        Double longitud,
+
+        String imagen
 ) {}
