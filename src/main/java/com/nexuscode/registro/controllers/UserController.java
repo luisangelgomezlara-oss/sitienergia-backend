@@ -17,37 +17,52 @@ import com.nexuscode.registro.services.UserService;
 @RequestMapping("/api/usuarios")
 @PreAuthorize("hasRole('ADMIN')")
 public class UserController {
-    
-    // Inyección de dependencias mediante la Interfaz (Principio SOLID: DIP)
+
     private final UserService userService;
 
-    public UserController(UserService userService) { 
-        this.userService = userService; 
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping 
-    public List<UserResponse> all() { 
-        return userService.obtenerTodos(); 
+    @GetMapping
+    public List<UserResponse> all() {
+        return userService.obtenerTodos();
     }
 
-    @PostMapping 
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@Valid @RequestBody UserRequest request) {
         return userService.crearUsuario(request);
     }
 
-    @PutMapping("/{id}") 
+    @PutMapping("/{id}")
     public UserResponse update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
         return userService.actualizarUsuario(id, request);
     }
 
-    @DeleteMapping("/{id}") 
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(@PathVariable Long id) { 
-        userService.desactivarUsuario(id); 
+    public void deactivate(@PathVariable Long id) {
+        userService.desactivarUsuario(id);
     }
 
-    // Los records (DTOs) se pueden quedar aquí por ahora para no romper tu código.
-    public record UserRequest(@NotBlank String nombre, @Email @NotBlank String email, @NotBlank String password, @NotNull Role rol, String telefono) {}
-    public record UpdateUserRequest(@NotBlank String nombre, @NotNull Role rol, String telefono, boolean activo) {}
+    // DTOs actualizados incluyendo "cedula"
+    public record UserRequest(
+            @NotBlank String nombre,
+            @Email @NotBlank String email,
+            @NotBlank String password,
+            @NotNull Role rol,
+            String telefono,
+            String cedula, // <-- Cédula incorporada
+            String especialidad
+    ) {}
+
+    public record UpdateUserRequest(
+            @NotBlank String nombre,
+            @NotNull Role rol,
+            String telefono,
+            String cedula, // <-- Cédula incorporada
+            boolean activo,
+            String especialidad
+    ) {}
 }

@@ -51,7 +51,20 @@ public class IncidenciaServiceImpl implements IncidenciaService {
         incidencia.setImagen(request.imagen());
         incidencia.setEstado("PENDIENTE"); // Estado por defecto al crear
 
-        // 4. Guardamos en PostgreSQL
+        // --- 4. ENRUTAMIENTO INTELIGENTE DIRECTO POR EL ÁREA DE LA CATEGORÍA ---
+        String area = categoria.getArea() != null ? categoria.getArea().toUpperCase().trim() : "";
+
+        if (area.contains("OBRA") || area.contains("CIVIL")) {
+            incidencia.setCuadrillaAsignada("Cuadrilla Pesada - Obras Civiles (Grúas)");
+        } else if (area.contains("RED") || area.contains("ELECTRICA")) {
+            incidencia.setCuadrillaAsignada("Cuadrilla Operativa - Redes y Transformadores");
+        } else if (area.contains("COMERCIAL")) {
+            incidencia.setCuadrillaAsignada("Cuadrilla Técnica - Control y Medida");
+        } else {
+            incidencia.setCuadrillaAsignada("Cuadrilla General de Emergencias");
+        }
+
+        // 5. Guardamos en PostgreSQL local con su cuadrilla asignada correctamente
         return incidenciaRepository.save(incidencia);
     }
 

@@ -18,7 +18,7 @@ import com.nexuscode.registro.repositories.UserRepository;
 import java.util.Collections;
 import java.util.List;
 
-@Service // ¡Muy importante esta anotación para Spring!
+@Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository users;
@@ -29,7 +29,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.encoder = encoder;
     }
 
-    // Este es el método clave que Spring Security necesitaba para autenticar contra la BD
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = users.findByEmail(email)
@@ -38,7 +37,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                user.isActivo(), // Valida si está activo
+                user.isActivo(),
                 true, true, true,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRol()))
         );
@@ -60,8 +59,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 request.email(),
                 encoder.encode(request.password()),
                 request.rol().name(),
-                request.telefono()
+                request.telefono(),
+                request.especialidad()
         );
+        nuevoUsuario.setCedula(request.cedula()); // <-- Asignamos la cédula
+
         return UserResponse.from(users.save(nuevoUsuario));
     }
 
@@ -72,7 +74,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setNombre(request.nombre());
         user.setRol(request.rol().name());
         user.setTelefono(request.telefono());
+        user.setCedula(request.cedula()); // <-- Asignamos la cédula
         user.setActivo(request.activo());
+        user.setEspecialidad(request.especialidad());
 
         return UserResponse.from(users.save(user));
     }

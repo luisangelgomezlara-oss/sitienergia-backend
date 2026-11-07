@@ -23,7 +23,6 @@ public class Incidencia {
     @JoinColumn(name = "tecnico_asignado_id")
     private User tecnicoAsignado;
 
-
     @Column(nullable = false, length = 50)
     private String nic;
 
@@ -32,7 +31,6 @@ public class Incidencia {
 
     @Column(nullable = false)
     private String ubicacion;
-
 
     @Column(name = "latitud")
     private Double latitud;
@@ -52,16 +50,18 @@ public class Incidencia {
     @Column(columnDefinition = "TEXT")
     private String imagen;
 
+    // NUEVO CAMPO PARA EL ENRUTAMIENTO DE CUADRILLAS SUGERIDO POR EL TUTOR
+    @Column(name = "cuadrilla_asignada")
+    private String cuadrillaAsignada;
+
     public String getImagen() { return imagen; }
     public void setImagen(String imagen) { this.imagen = imagen; }
 
-    public String getDireccion() {
-        return direccion;
-    }
+    public String getDireccion() { return direccion; }
+    public void setDireccion(String direccion) { this.direccion = direccion; }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
+    public String getCuadrillaAsignada() { return cuadrillaAsignada; }
+    public void setCuadrillaAsignada(String cuadrillaAsignada) { this.cuadrillaAsignada = cuadrillaAsignada; }
 
     @PrePersist
     protected void onCreate() {

@@ -33,9 +33,13 @@ public class User {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    @Column(name = "especialidad", nullable = true)
+    private String especialidad; // Campo para técnicos: REDES ELECTRICAS, OBRAS CIVILES, COMERCIAL
+
     // --- CONSTRUCTORES ---
     public User() {}
 
+    // Constructor que usa tu UserServiceImpl actualmente
     public User(String nombre, String email, String password, String rol, String telefono) {
         this.nombre = nombre;
         this.email = email;
@@ -43,6 +47,17 @@ public class User {
         this.rol = rol;
         this.telefono = telefono;
         this.activo = true;
+    }
+
+    // Constructor completo por si necesitas instanciarlo con especialidad
+    public User(String nombre, String email, String password, String rol, String telefono, String especialidad) {
+        this.nombre = nombre;
+        this.email = email;
+        this.password = password;
+        this.rol = rol;
+        this.telefono = telefono;
+        this.activo = true;
+        this.especialidad = especialidad;
     }
 
     // --- GETTERS Y SETTERS ---
@@ -57,7 +72,7 @@ public class User {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-    public String getPasswordHash() { return password; } // Alias para AuthServiceImpl
+    public String getPasswordHash() { return password; }
 
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
@@ -72,6 +87,9 @@ public class User {
     public void setCedula(String cedula) { this.cedula = cedula; }
 
     public Boolean getActivo() { return activo; }
-    public Boolean isActivo() { return activo != null && activo; } // Alias para AuthServiceImpl
+    public Boolean isActivo() { return activo != null && activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
+
+    public String getEspecialidad() { return especialidad; }
+    public void setEspecialidad(String especialidad) { this.especialidad = especialidad; }
 }
