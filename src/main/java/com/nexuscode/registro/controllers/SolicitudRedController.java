@@ -1,12 +1,17 @@
 package com.nexuscode.registro.controllers;
 
-import com.nexuscode.registro.entities.SolicitudRed;
 import com.nexuscode.registro.entities.EstadoSolicitud;
+import com.nexuscode.registro.entities.SolicitudRed;
+import com.nexuscode.registro.entities.User;
+import com.nexuscode.registro.repositories.UserRepository;
 import com.nexuscode.registro.services.SolicitudRedService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -16,6 +21,9 @@ public class SolicitudRedController {
 
     @Autowired
     private SolicitudRedService service;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/radicar")
     public ResponseEntity<SolicitudRed> radicar(@RequestBody SolicitudRed solicitud) {
@@ -47,6 +55,19 @@ public class SolicitudRedController {
         return ResponseEntity.ok(service.obtenerPorCuadrilla(id));
     }
 
+    @GetMapping("/mis-asignaciones")
+    public ResponseEntity<List<SolicitudRed>> misAsignacionesTecnico(Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no autenticado");
+        }
+
+        User tecnicoLogueado = userRepository.findByEmail(principal.getName())
+                .orElseGet(() -> userRepository.findByNic(principal.getName())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Técnico no encontrado")));
+
+        return ResponseEntity.ok(service.obtenerPorCuadrilla(tecnicoLogueado.getId()));
+    }
+
     @PutMapping("/{id}/estado")
     public ResponseEntity<SolicitudRed> cambiarEstado(
             @PathVariable("id") Long id,
@@ -55,7 +76,6 @@ public class SolicitudRedController {
         return ResponseEntity.ok(service.actualizarEstado(id, estado, conceptoTecnico));
     }
 
-    // CORREGIDO: Parámetros nombrados explícitamente ("id" y "cuadrillaId")
     @PutMapping("/{id}/asignar-cuadrilla")
     public ResponseEntity<SolicitudRed> asignarCuadrilla(
             @PathVariable("id") Long id,
